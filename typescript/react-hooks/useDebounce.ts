@@ -12,16 +12,16 @@ const useDebounce = <T extends (...args: unknown[]) => unknown>(
 ) => {
   const funcRef = useRef(func);
   funcRef.current = func;
-  const timeoutId = useRef<NodeJS.Timeout | null>(null);
+  const timer = useRef<NodeJS.Timeout | null>(null);
 
   const debounce = useCallback(
     (...args: unknown[]) => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current);
+      if (timer.current) {
+        clearTimeout(timer.current);
       }
-      timeoutId.current = setTimeout(() => {
+      timer.current = setTimeout(() => {
         funcRef.current(...args);
-        timeoutId.current = null;
+        timer.current = null;
       }, ms);
     },
     [ms],
@@ -29,8 +29,8 @@ const useDebounce = <T extends (...args: unknown[]) => unknown>(
 
   useEffect(
     () => () => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current);
+      if (timer.current) {
+        clearTimeout(timer.current);
       }
     },
     [],

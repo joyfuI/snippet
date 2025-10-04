@@ -12,13 +12,13 @@ const useThrottle = <T extends (...args: unknown[]) => unknown>(
 ) => {
   const funcRef = useRef(func);
   funcRef.current = func;
-  const timeoutId = useRef<NodeJS.Timeout | null>(null);
+  const timer = useRef<NodeJS.Timeout | null>(null);
 
   const throttle = useCallback(
     (...args: unknown[]) => {
-      if (!timeoutId.current) {
-        timeoutId.current = setTimeout(() => {
-          timeoutId.current = null;
+      if (!timer.current) {
+        timer.current = setTimeout(() => {
+          timer.current = null;
         }, ms);
         funcRef.current(...args);
       }
@@ -28,8 +28,8 @@ const useThrottle = <T extends (...args: unknown[]) => unknown>(
 
   useEffect(
     () => () => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current);
+      if (timer.current) {
+        clearTimeout(timer.current);
       }
     },
     [],
