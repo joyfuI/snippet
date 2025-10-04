@@ -14,9 +14,9 @@ const useStorage = <T>(
   key: string,
   initialValue: T,
 ) => {
-  const initialValueRef = useRef<T>(initialValue);
+  const initialValueRef = useRef(initialValue);
   initialValueRef.current = initialValue;
-  const storedValueRef = useRef<T>(initialValue);
+  const storedValueRef = useRef(initialValue);
 
   const subscribe = useCallback(
     (callback: () => void) => {
