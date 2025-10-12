@@ -12,11 +12,10 @@ const useStorage = <T>(
   storage: Storage,
   eventType: string,
   key: string,
-  initialValue: T,
+  initialValue: T | (() => T),
 ) => {
   const initialValueRef = useRef(initialValue);
   initialValueRef.current = initialValue;
-  const storedValueRef = useRef(initialValue);
 
   const subscribe = useCallback(
     (callback: () => void) => {
@@ -48,11 +47,19 @@ const useStorage = <T>(
 
   const storedValue = useMemo(() => {
     try {
-      return item ? (JSON.parse(item) as T) : initialValueRef.current;
+      if (item) {
+        return JSON.parse(item) as T;
+      }
+      return typeof initialValueRef.current === 'function'
+        ? (initialValueRef.current as () => T)()
+        : initialValueRef.current;
     } catch {
-      return initialValueRef.current;
+      return typeof initialValueRef.current === 'function'
+        ? (initialValueRef.current as () => T)()
+        : initialValueRef.current;
     }
   }, [item]);
+  const storedValueRef = useRef(storedValue);
   storedValueRef.current = storedValue;
 
   const setValue = useCallback(
@@ -81,7 +88,7 @@ const useStorage = <T>(
  * @param initialValue 값이 없을 때 사용할 기본값
  * @returns [저장된 값, 변경 함수, 삭제 함수]
  */
-export const useLocalStorage = <T>(key: string, initialValue: T) =>
+export const useLocalStorage = <T>(key: string, initialValue: T | (() => T)) =>
   useStorage(window.localStorage, 'localstorage', key, initialValue);
 
 /**
@@ -90,5 +97,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T) =>
  * @param initialValue 값이 없을 때 사용할 기본값
  * @returns [저장된 값, 변경 함수, 삭제 함수]
  */
-export const useSessionStorage = <T>(key: string, initialValue: T) =>
-  useStorage(window.sessionStorage, 'sessionstorage', key, initialValue);
+export const useSessionStorage = <T>(
+  key: string,
+  initialValue: T | (() => T),
+) => useStorage(window.sessionStorage, 'sessionstorage', key, initialValue);
