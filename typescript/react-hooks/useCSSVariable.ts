@@ -75,7 +75,7 @@ const useCSSVariable = (
     [key, scope],
   );
 
-  return [storedValue, setValue];
+  return [storedValue, setValue] as const;
 };
 
 export default useCSSVariable;
