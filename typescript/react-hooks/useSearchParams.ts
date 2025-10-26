@@ -62,7 +62,8 @@ const useSearchParams = () => {
       if (cache.has(name)) {
         return cache.get(name);
       }
-      const result = URLSearchParams.prototype.getAll.call(searchParams, name); // 원본 getAll 사용
+      const originalGetAll = URLSearchParams.prototype.getAll;
+      const result = originalGetAll.call(searchParams, name); // 원본 getAll 사용
       cache.set(name, result);
       return result;
     };
