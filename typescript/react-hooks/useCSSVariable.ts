@@ -17,7 +17,7 @@ declare global {
  */
 const useCSSVariable = (
   key: string,
-  initialValue: string | (() => string),
+  initialValue: string | (() => string) = '',
   scope: string | HTMLElement = ':root',
 ) => {
   const subscribe = useCallback(
