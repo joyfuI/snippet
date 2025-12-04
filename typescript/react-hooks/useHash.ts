@@ -14,14 +14,19 @@ const subscribe = (callback: () => void) => {
  */
 const useHash = (initialValue: string | (() => string) = '') => {
   const getSnapshot = useCallback(() => {
-    const value = decodeURIComponent(window.location.hash);
+    const value = decodeURIComponent(window.location.hash.slice(1));
     return (
       value ||
       (typeof initialValue === 'function' ? initialValue() : initialValue)
     );
   }, [initialValue]);
 
-  const hash = useSyncExternalStore(subscribe, getSnapshot);
+  const getServerSnapshot = useCallback(
+    () => (typeof initialValue === 'function' ? initialValue() : initialValue),
+    [initialValue],
+  );
+
+  const hash = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const hashRef = useRef(hash);
   hashRef.current = hash;
 
