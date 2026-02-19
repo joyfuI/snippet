@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
  * @returns Element가 뷰포트에 들어왔는지 여부
  */
 const useIntersectionObserver = (
-  ref: RefObject<Element>,
-  options: IntersectionObserverInit,
+  ref: RefObject<Element | null>,
+  options?: IntersectionObserverInit,
 ) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
 
