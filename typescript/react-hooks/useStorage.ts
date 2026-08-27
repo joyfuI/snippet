@@ -1,16 +1,18 @@
 import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
 
+type StorageEventType = 'localstorage' | 'sessionstorage';
 type CustomStorageEvent = CustomEvent<{ key: string }>;
 
 declare global {
   interface WindowEventMap {
-    [k: string]: CustomStorageEvent;
+    localstorage: CustomStorageEvent;
+    sessionstorage: CustomStorageEvent;
   }
 }
 
 const useStorage = <T>(
   storage: Storage,
-  eventType: string,
+  eventType: StorageEventType,
   key: string,
   initialValue: T | (() => T),
 ) => {
@@ -21,7 +23,10 @@ const useStorage = <T>(
     (callback: () => void) => {
       const handleStorageEvent = (event: StorageEvent | CustomStorageEvent) => {
         if (event instanceof StorageEvent) {
-          if (event.key === key) {
+          if (
+            event.storageArea === storage &&
+            (event.key === key || event.key === null)
+          ) {
             callback();
           }
         } else if (event instanceof CustomEvent) {
@@ -38,7 +43,7 @@ const useStorage = <T>(
         window.removeEventListener(eventType, handleStorageEvent);
       };
     },
-    [eventType, key],
+    [storage, eventType, key],
   );
 
   const getSnapshot = useCallback(() => storage.getItem(key), [storage, key]);
