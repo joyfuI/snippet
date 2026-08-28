@@ -73,6 +73,7 @@ const useStorage = <T>(
         typeof newValue === 'function'
           ? (newValue as (oldValue: T) => T)(storedValueRef.current)
           : newValue;
+      storedValueRef.current = value;
       storage.setItem(key, JSON.stringify(value));
       window.dispatchEvent(new CustomEvent(eventType, { detail: { key } })); // 커스텀 이벤트 발생
     },
